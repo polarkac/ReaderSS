@@ -1,0 +1,10 @@
+{% extends 'homepage/base.html' %}
+
+{% block content %}
+    {% for k, fs in feeds.iteritems %} 
+        <h2>{{ k }}</h2>
+        {% for feed in fs.items %} 
+            <p><a href="{{ feed.link }}">{{ feed.title }}</a></p>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
