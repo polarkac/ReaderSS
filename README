@@ -1,8 +1,0 @@
-Project for learning about Django framework.
-
-Simple RSS reader.
-
-You need this library:
- - Django 1.5.1
- - South
- - feedparser
