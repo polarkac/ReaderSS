@@ -1,0 +1,21 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+#header {
+    width: 100%;
+    background-color: gray;
+}
+
+#header h1 {
+    display: inline;
+}
+
+#header span {
+    width: 100%;
+}
+
+#content {
+    clear: both;
+}

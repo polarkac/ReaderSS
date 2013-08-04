@@ -1,11 +1,31 @@
+{% load staticfiles %}
 <!doctype html>
 <html>
     <head>
         <meta charset="utf-8">
         <title>{{ title }}</title>
+        <link rel="stylesheet" type="text/css" href="{% static "css/styles.css" %}">
     </head>
     <body>
-        <h1>ReaderSS</h1>
-        {% block content %}{% endblock %}
+        <div id="header">
+            <h1>{{ title }}</h1>
+            <span id="description">
+                Just some text
+            </span>
+        </div>
+        <div id="content">
+            {% if not user.is_authenticated %}
+                <form action="#" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+                    <input type="submit" name="login" value="Login">
+                </form>
+            {% else %}
+                <p>Welcome {{ user.username }}</p>
+                <p><a href="{% url 'logout_page' %}">Logout</a></p>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
     </body>
 </html>

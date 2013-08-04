@@ -4,7 +4,14 @@
     {% for k, fs in feeds.iteritems %} 
         <h2>{{ k }}</h2>
         {% for feed in fs.items %} 
-            <p><a href="{{ feed.link }}">{{ feed.title }}</a></p>
+            <p>
+                <a href="{{ feed.link }}">{{ feed.title }}</a>
+                {% if feed.published_parsed %}
+                    - {{ feed.published_parsed.tm_mday }}. 
+                    {{ feed.published_parsed.tm_mon }}.
+                    {{ feed.published_parsed.tm_year }}
+                {% endif %}
+            </p>
         {% endfor %}
     {% endfor %}
 {% endblock %}

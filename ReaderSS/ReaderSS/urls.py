@@ -5,11 +5,9 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
     url( r'^$', 'homepage.views.index', name='index'),
-    # url(r'^$', 'ReaderSS.views.home', name='home'),
-    # url(r'^ReaderSS/', include('ReaderSS.foo.urls')),
-
+    url( r'^logout/', 'homepage.views.logout_page', name='logout_page' ),
+    url( r'^login/', 'homepage.views.login_page', name='login_page' ),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
