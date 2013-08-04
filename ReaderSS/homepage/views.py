@@ -3,6 +3,8 @@ from homepage.models import Feeds, AuthForm
 import feedparser
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.http import HttpResponseRedirect
 
 def index( request ):
     feeds = Feeds.objects.all()
@@ -47,3 +49,15 @@ def login_page( request ):
 
     return render( request, 'homepage/login.html', context )
 
+def register_page( request ):
+    context = {'title': 'ReaderSS - Registration'}
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            return HttpResponseRedirect("/")
+    else:
+        form = UserCreationForm()
+
+    context['register_form'] = form;
+    return render(request, "homepage/register.html", context )

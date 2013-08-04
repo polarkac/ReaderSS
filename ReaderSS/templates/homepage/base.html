@@ -15,11 +15,14 @@
         </div>
         <div id="content">
             {% if not user.is_authenticated %}
-                <form action="#" method="post">
-                    {% csrf_token %}
-                    {{ form }}
-                    <input type="submit" name="login" value="Login">
-                </form>
+                {% if form %}
+                    <form action="#" method="post">
+                        {% csrf_token %}
+                        {{ form }}
+                        <input type="submit" name="login" value="Login">
+                    </form>
+                    <span><a href="{% url 'register_page' %}">Dont have account yet?</a></span>
+                {% endif %}
             {% else %}
                 <p>Welcome {{ user.username }}</p>
                 <p><a href="{% url 'logout_page' %}">Logout</a></p>
