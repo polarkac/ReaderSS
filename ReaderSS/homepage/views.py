@@ -4,56 +4,50 @@ import feedparser
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
-from django import forms
+from django.views.generic.base import TemplateView
 
-def index( request ):
+class HomeIndexView( TemplateView ):
+
+    templateName = 'homepage/homepage.html'
     context = { 'title': 'ReaderSS' }
 
-    if request.method == 'POST':
+    def get( self, request, *args, **kwargs ):
+        self.context['form'] = AuthForm( request )
+        self.context['user'] = request.user
+        return render( request, self.templateName, self.context )
+
+    def post( self, request, *args, **kwargs ):
         form = AuthForm( request, request.POST )
-        if form.is_valid():
-            if form.getUser() is not None:
-                redirect( '/' )
-    else:
-        form = AuthForm( request )
+        self.context['form'] = form
+        self.context['user'] = request.user
+        if form.is_valid() and form.getUser() is not None:
+            return redirect( '/' )
+        else:
+            return render( request, self.templateName, self.context )
 
-    context['form'] = form;
-    context['user'] = request.user
+class HomeLogoutView( TemplateView ):
 
-    return render( request, 'homepage/homepage.html', context )
+    def get( self, request, *args, **kwargs ):
+        if request.user.is_authenticated():
+            logout( request )
+            return redirect( '/' )
+        else:
+            return redirect( 'login/' )
 
-def logout_page( request ):
-    if request.user.is_authenticated():
-        logout( request )
-        return redirect( '/' )
-    else:
-        return redirect( 'login/' )
+class HomeRegisterView( TemplateView ):
+    templateName = 'homepage/register.html'
+    context = { 'title': 'ReaderSS - Registration' }
 
-def login_page( request ):
-    if request.method == 'POST':
-        form = AuthForm( request.POST )
-        if form.is_valid():
-            user = authenticate( username = form.cleaned_data['username'], password = form.cleaned_data['password'] )
-            if user is not None:
-                login( request, user )
-                return redirect( '/' )
-    else:
-        form = AuthForm()
+    def get( self, request, *args, **kwargs ):
+        form = UserCreationForm()
+        self.context['register_form'] = form
+        return render( request, self.templateName, self.context )
 
-    context = { 'form': form }
-
-    return render( request, 'homepage/login.html', context )
-
-def register_page( request ):
-    context = {'title': 'ReaderSS - Registration'}
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+    def post( self, request, *args, **kwargs ):
+        form = UserCreationForm( request.POST )
         if form.is_valid():
             new_user = form.save()
-            return HttpResponseRedirect("/")
-    else:
-        form = UserCreationForm()
+            return HttpResponseRedirect( "/" )
 
-    context['register_form'] = form;
-    return render(request, "homepage/register.html", context )
+        self.context['register_form'] = form;
+        return render( request, self.templateName, self.context )
