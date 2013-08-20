@@ -1,13 +1,11 @@
 from django.shortcuts import render, redirect
-from homepage.models import Feeds, AuthForm
+from homepage.models import Feeds, AuthForm, RegisterForm
 import feedparser
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView
 
 class HomeIndexView( TemplateView ):
-
     templateName = 'homepage/homepage.html'
     context = { 'title': 'ReaderSS' }
 
@@ -25,6 +23,9 @@ class HomeIndexView( TemplateView ):
         else:
             return render( request, self.templateName, self.context )
 
+class HomeLoginView( HomeIndexView ):
+    templateName = 'homepage/login.html'
+
 class HomeLogoutView( TemplateView ):
 
     def get( self, request, *args, **kwargs ):
@@ -39,12 +40,12 @@ class HomeRegisterView( TemplateView ):
     context = { 'title': 'ReaderSS - Registration' }
 
     def get( self, request, *args, **kwargs ):
-        form = UserCreationForm()
+        form = RegisterForm()
         self.context['register_form'] = form
         return render( request, self.templateName, self.context )
 
     def post( self, request, *args, **kwargs ):
-        form = UserCreationForm( request.POST )
+        form = RegisterForm( request.POST )
         if form.is_valid():
             new_user = form.save()
             return HttpResponseRedirect( "/" )
