@@ -10,18 +10,18 @@ class HomeIndexView( TemplateView ):
     context = { 'title': 'ReaderSS' }
 
     def get( self, request, *args, **kwargs ):
-        self.context['form'] = AuthForm( request )
+        self.context['form'] = AuthForm( request, request.POST )
         self.context['user'] = request.user
         return self.render_to_response( self.context )
 
     def post( self, request, *args, **kwargs ):
         form = AuthForm( request, request.POST )
         self.context['form'] = form
-        self.context['user'] = request.user
         if form.is_valid() and form.getUser() is not None:
             return redirect( '/' )
-        else:
-            return self.render_to_response( self.context )
+
+        self.context['user'] = request.user
+        return self.render_to_response( self.context )
 
 class HomeLoginView( HomeIndexView ):
     template_name = 'homepage/login.html'
