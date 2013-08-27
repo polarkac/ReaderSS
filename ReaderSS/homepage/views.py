@@ -6,13 +6,13 @@ from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView
 
 class HomeIndexView( TemplateView ):
-    templateName = 'homepage/homepage.html'
+    template_name = 'homepage/homepage.html'
     context = { 'title': 'ReaderSS' }
 
     def get( self, request, *args, **kwargs ):
         self.context['form'] = AuthForm( request )
         self.context['user'] = request.user
-        return render( request, self.templateName, self.context )
+        return self.render_to_response( self.context )
 
     def post( self, request, *args, **kwargs ):
         form = AuthForm( request, request.POST )
@@ -21,10 +21,10 @@ class HomeIndexView( TemplateView ):
         if form.is_valid() and form.getUser() is not None:
             return redirect( '/' )
         else:
-            return render( request, self.templateName, self.context )
+            return self.render_to_response( self.context )
 
 class HomeLoginView( HomeIndexView ):
-    templateName = 'homepage/login.html'
+    template_name = 'homepage/login.html'
 
 class HomeLogoutView( TemplateView ):
 
@@ -35,20 +35,22 @@ class HomeLogoutView( TemplateView ):
         else:
             return redirect( 'login/' )
 
-class HomeRegisterView( TemplateView ):
-    templateName = 'homepage/register.html'
+class HomeRegisterView( HomeIndexView ):
+    template_name = 'homepage/register.html'
     context = { 'title': 'ReaderSS - Registration' }
 
     def get( self, request, *args, **kwargs ):
+        super( HomeRegisterView, self).get( request, *args, **kwargs )
         form = RegisterForm()
         self.context['register_form'] = form
-        return render( request, self.templateName, self.context )
+        return self.render_to_response( self.context )
 
     def post( self, request, *args, **kwargs ):
+        super( HomeRegisterView, self).post( request, *args, **kwargs )
         form = RegisterForm( request.POST )
         if form.is_valid():
             new_user = form.save()
             return HttpResponseRedirect( "/" )
 
         self.context['register_form'] = form;
-        return render( request, self.templateName, self.context )
+        return self.render_to_response( self.context )
