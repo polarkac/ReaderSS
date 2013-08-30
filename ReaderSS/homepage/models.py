@@ -6,7 +6,11 @@ from django.contrib.auth.models import User
 class Feeds( models.Model ):
     name = models.CharField( max_length = 130 )
     url = models.CharField( max_length = 200 )
-    user = models.OneToOneField( User )
+    user = models.ForeignKey( User )
+
+    class Meta:
+        verbose_name = ( 'Feeds' )
+        verbose_name_plural = ( 'Feeds' )
 
     def __unicode__( self ):
         return self.name

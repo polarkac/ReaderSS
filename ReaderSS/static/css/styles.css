@@ -5,17 +5,55 @@
 
 #header {
     width: 100%;
+    height: 60px;
     background-color: gray;
 }
 
-#header h1 {
-    display: inline;
+#header #logo {
+    padding-top: 5px;
+    float: left;
+    width: 250px;
 }
 
-#header span {
-    width: 100%;
+#header #logo img {
+    float: left;
+    width: 55px;
+    height: 55px;
+}
+
+#header #logo a {
+    margin-top: 5px;
+    float: right;
+}
+
+#header #description {
+    padding-top: 15px;
+    margin-right: 9px;
+    float: right;
 }
 
 #content {
+    margin-top: 10px;
     clear: both;
+    width: 100%;
+    min-height: 500px;
+    display: block;
+}
+
+#content #user_bar {
+    width: 100%;
+    border-bottom: 1px dashed black;
+    padding-bottom: 3px;
+}
+
+#content #main_body {
+    margin-top: 15px;
+}
+
+#footer {
+    font-size: 13px;
+    width: 100%;
+    text-align: center;
+    border-top: 1px dashed black;
+    padding-top: 4px;
 }

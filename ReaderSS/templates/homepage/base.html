@@ -3,30 +3,35 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>{{ title }}</title>
+        <title>{{ title }} - ReaderSS</title>
         <link rel="stylesheet" type="text/css" href="{% static "css/styles.css" %}">
     </head>
     <body>
         <div id="header">
-            <h1>{{ title }}</h1>
+            <div id="logo">
+                <img src="{% static 'imgs/logo.png' %}">
+                <a href="{% url 'index' %}"><h1>ReaderSS</h1></a>
+            </div>
             <span id="description">
-                Just some text
+                "Simple RSS reader for everybody."
             </span>
         </div>
         <div id="content">
-            {% if not user.is_authenticated %}
-               <form action="#" method="post">
-                    {% csrf_token %}
-                    {{ form }}
-                    <input type="submit" name="login" value="Login">
-                </form>
-                <span><a href="{% url 'register_page' %}">Dont have account yet?</a></span>
-            {% else %}
-                <p>Welcome {{ user.username }}</p>
-                <p><a href="{% url 'logout_page' %}">Logout</a></p>
-            {% endif %}
+            <div id="user_bar">
+                {% if not user.is_authenticated %}
+                   <span><a href="{% url 'login_page' %}">Login</a> or <a href="{% url 'register_page' %}">register</a></span>
+                {% else %}
+                    <p>Welcome {{ user.username }}</p>
+                    <p><a href="{% url 'logout_page' %}">Logout</a></p>
+                {% endif %}
+            </div>
 
-            {% block content %}{% endblock %}
+            <div id="main_body">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        <div id="footer">
+            Project is under MIT license. Source code hosted at <a href="https://github.com/polarkac/ReaderSS/">GitHub</a>.
         </div>
     </body>
 </html>
