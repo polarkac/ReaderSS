@@ -7,21 +7,25 @@ from django.views.generic.base import TemplateView
 
 class HomeIndexView( TemplateView ):
     template_name = 'homepage/homepage.html'
-    context = { 'title': 'ReaderSS' }
+
+    def get_context_data( self, request, **kwargs ):
+        context = super( HomeIndexView, self).get_context_data( **kwargs )
+        context['title'] = 'ReaderSS'
+        context['form'] = AuthForm( request, request.POST )
+        context['user'] = request.user
+
+        return context
 
     def get( self, request, *args, **kwargs ):
-        self.context['form'] = AuthForm( request, request.POST )
-        self.context['user'] = request.user
-        return self.render_to_response( self.context )
+        return self.render_to_response( self.get_context_data( request, **kwargs ) )
 
     def post( self, request, *args, **kwargs ):
-        form = AuthForm( request, request.POST )
-        self.context['form'] = form
+        context = self.get_context_data( request, **kwargs )
+        form = context['form']
         if form.is_valid() and form.getUser() is not None:
             return redirect( '/' )
 
-        self.context['user'] = request.user
-        return self.render_to_response( self.context )
+        return self.render_to_response( context )
 
 class HomeLoginView( HomeIndexView ):
     template_name = 'homepage/login.html'
@@ -37,20 +41,21 @@ class HomeLogoutView( TemplateView ):
 
 class HomeRegisterView( HomeIndexView ):
     template_name = 'homepage/register.html'
-    context = { 'title': 'ReaderSS - Registration' }
+
+    def get_context_data( self, request, **kwargs ):
+        context = super( HomeRegisterView, self ).get_context_data( request, **kwargs )
+        context['register_form'] = RegisterForm( request, request.POST )
+
+        return context
 
     def get( self, request, *args, **kwargs ):
-        super( HomeRegisterView, self).get( request, *args, **kwargs )
-        form = RegisterForm()
-        self.context['register_form'] = form
-        return self.render_to_response( self.context )
+        return self.render_to_response( self.get_context_data( request, **kwargs ) )
 
     def post( self, request, *args, **kwargs ):
-        super( HomeRegisterView, self).post( request, *args, **kwargs )
-        form = RegisterForm( request.POST )
+        context = self.get_context_data( request, **kwargs )
+        form = context['register_form']
         if form.is_valid():
             new_user = form.save()
             return HttpResponseRedirect( "/" )
 
-        self.context['register_form'] = form;
-        return self.render_to_response( self.context )
+        return self.render_to_response( context )

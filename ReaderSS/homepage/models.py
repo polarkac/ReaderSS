@@ -14,8 +14,8 @@ class Feeds( models.Model ):
 class AuthForm( forms.Form ):
     request = None
     user = None
-    username = forms.CharField( min_length = 1, max_length = 30 )
-    password = forms.CharField( min_length = 1, max_length = 30, widget = forms.PasswordInput() )
+    username = forms.CharField( max_length = 30 )
+    password = forms.CharField( max_length = 30, widget = forms.PasswordInput() )
 
     def __init__( self, argRequest = None, *args, **kwargs ):
         self.request = argRequest;
@@ -25,19 +25,17 @@ class AuthForm( forms.Form ):
             super( AuthForm, self ).__init__()
 
     def clean( self ):
-        cleanedUsername = None
-        cleanedPassword = None
-        if 'username' in self.cleaned_data and 'password' in self.cleaned_data:
-            cleanedUsername = self.cleaned_data['username']
-            cleanedPassword = self.cleaned_data['password']
+        if not self.is_valid():
+            return self.cleaned_data
+        cleanedUsername = self.cleaned_data['username']
+        cleanedPassword = self.cleaned_data['password']
 
-        if cleanedUsername and cleanedPassword:
-            self.user = authenticate( username = cleanedUsername, password = cleanedPassword )
-            if self.user is None:
-                raise forms.ValidationError( 'Invalid username or password.', 
-                    code = 'invalid_login' )
-            else:
-                self.loginUser()
+        self.user = authenticate( username = cleanedUsername, password = cleanedPassword )
+        if self.user is None:
+            raise forms.ValidationError( 'Invalid username or password.', 
+                code = 'invalid_login' )
+        else:
+            self.loginUser()
 
         return self.cleaned_data
 
@@ -48,17 +46,24 @@ class AuthForm( forms.Form ):
         return self.user
 
 class RegisterForm( forms.ModelForm ):
-    register_username = forms.RegexField( max_length = 30,
+    username = forms.RegexField( max_length = 30,
             regex=r'^[\w.@+-]+$' )
-    register_password = forms.CharField( min_length = 6, widget = forms.PasswordInput() )
-    register_passwordVer = forms.CharField( min_length = 6, widget = forms.PasswordInput() )
+    password = forms.CharField( min_length = 6, widget = forms.PasswordInput() )
+    passwordVer = forms.CharField( min_length = 6, widget = forms.PasswordInput() )
 
     class Meta:
         model = User
-        fields = ('register_username', 'register_password')
+        fields = ('username', 'password')
 
-    def clean_username( self ):
-        username = self.cleaned_data['register_username']
+    def __init__( self, argRequest = None, *args, **kwargs ):
+        self.request = argRequest;
+        if 'register' in self.request.POST:
+            super( RegisterForm, self ).__init__( *args, **kwargs )
+        else:
+            super( RegisterForm, self ).__init__()
+            
+    def clean_register_username( self ):
+        username = self.cleaned_data['username']
         try:
             User.objects.get( username = username )
         except User.DoesNotExist:
@@ -66,9 +71,9 @@ class RegisterForm( forms.ModelForm ):
         
         raise forms.ValidationError( 'Duplicate username.', code = 'duplicate_username' )
 
-    def clean_passwordVer( self ):
-        pass1 = self.cleaned_data['register_password']
-        pass2 = self.cleaned_data['register_passwordVer']
+    def clean_register_passwordVer( self ):
+        pass1 = self.cleaned_data['password']
+        pass2 = self.cleaned_data['passwordVer']
 
         if pass1 and pass2 and pass1 != pass2:
             raise forms.ValidationError( 'Passwords do not match.', code = 'wrong_passwords' )
@@ -77,7 +82,7 @@ class RegisterForm( forms.ModelForm ):
 
     def save( self ):
         user = super( RegisterForm, self ).save( commit = False )
-        user.set_password( self.cleaned_data['register_password'] )
+        user.set_password( self.cleaned_data['password'] )
 
         user.save()
         return user
